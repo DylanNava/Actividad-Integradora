@@ -1,0 +1,737 @@
+using System.Text;
+using System.Collections.Generic;
+using System.Diagnostics.Tracing;
+using System.Linq;
+using System.Threading.Tasks;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Runtime.InteropServices;
+using Path = System.IO.Path;
+using System.Diagnostics;
+
+namespace WpfApp1
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        [Serializable]
+        public class Estacion
+        {
+            public string Nombre { get; private set; }
+            public int Linea { get; private set; }
+            public string Direccion { get; private set; }
+            public double Horario { get; private set; }
+
+
+
+            public Estacion(string nombre, int linea, string direccion, double horario)
+            {
+                Nombre = nombre;
+                Linea = linea;
+                Direccion = direccion;
+                Horario = horario;
+            }
+
+            public void SetNombre(string nombre)
+            {
+                Nombre = nombre;
+            }
+
+            public void SetLinea(int linea)
+            {
+                Linea = linea;
+            }
+
+            public void SetHorario(double horario)
+            {
+                if (horario >= 0 && horario <= 24)
+                {
+                    Horario = horario;
+                }
+                else
+                {
+                    Console.WriteLine("Horario no valido");
+                }
+
+            }
+
+            public void SetDireccion(string direccion)
+            {
+                Direccion = direccion;
+            }
+
+            public string GetNombre()
+            {
+                return Nombre;
+            }
+            public int GetLinea()
+            { return Linea; }
+
+            public double GetHorario() { return Horario; }
+
+            public string GetDireccion() { return Direccion; }
+
+
+
+        }
+
+        public LinkedList<Estacion>[] Estaciones = new LinkedList<Estacion>[20];
+        public MainWindow()
+        {
+            this.InitializeComponent();
+
+            for (int i = 0; i < Estaciones.Length; i++)
+            {
+                Estaciones[i] = new LinkedList<Estacion>();
+            }
+
+            //Linea1    
+            LinkedList<Estacion> Cuatitlan = new LinkedList<Estacion>();
+            LinkedList<Estacion> Tultitlan = new LinkedList<Estacion>();
+            LinkedList<Estacion> Lecheria = new LinkedList<Estacion>();
+            LinkedList<Estacion> Tlalnepantla = new LinkedList<Estacion>();
+            LinkedList<Estacion> Ferreria = new LinkedList<Estacion>();
+
+            //Linea2
+            LinkedList<Estacion> CuatroCaminos = new LinkedList<Estacion>();
+            LinkedList<Estacion> Panteones = new LinkedList<Estacion>();
+            LinkedList<Estacion> Tacuba = new LinkedList<Estacion>();
+            LinkedList<Estacion> Cuitlahuac = new LinkedList<Estacion>();
+            LinkedList<Estacion> Popotla = new LinkedList<Estacion>();
+
+            //Linea 3
+            LinkedList<Estacion> IndiosVerdes = new LinkedList<Estacion>();
+            LinkedList<Estacion> Deportivo = new LinkedList<Estacion>();
+            LinkedList<Estacion> Potrero = new LinkedList<Estacion>();
+            LinkedList<Estacion> LaRaza = new LinkedList<Estacion>();
+            LinkedList<Estacion> Tlatelolco = new LinkedList<Estacion>();
+
+            //Linea 7
+            LinkedList<Estacion> ElRosario = new LinkedList<Estacion>();
+            LinkedList<Estacion> AquilesSerdan = new LinkedList<Estacion>();
+            LinkedList<Estacion> Camarones = new LinkedList<Estacion>();
+            LinkedList<Estacion> Refineria = new LinkedList<Estacion>();
+            LinkedList<Estacion> Tacuba1 = new LinkedList<Estacion>();
+
+
+            Estacion estacion = new Estacion("Cuatitlan", 1, "Palestina 44", 1.1);
+            Estacion estacion1 = new Estacion("Tultitlan", 1, "Rivas Guillen 64", 1.2);
+            Estacion estacion2 = new Estacion("Lecheria", 1, "Primavera 21", 1.3);
+            Estacion estacion3 = new Estacion("Tlalnepantla", 1, "Puerto fe 32", 1.4);
+            Estacion estacion4 = new Estacion("Ferreria", 1, "Santiago 64", 1.5);
+
+            Estacion estacion5 = new Estacion("Cuatro Caminos", 2, "Palestina 44", 2.1);
+            Estacion estacion6 = new Estacion("Panteones", 2, "Rivas Guillen 64", 2.2);
+            Estacion estacion7 = new Estacion("Tacuba", 2, "Primavera 21", 2.3);
+            Estacion estacion8 = new Estacion("Cuitlahuac", 2, "Puerto fe 32", 2.4);
+            Estacion estacion9 = new Estacion("Popotla", 2, "Santiago 64", 2.5);
+
+            Estacion estacion10 = new Estacion("Indios verdes", 3, "Palestina 44", 3.1);
+            Estacion estacion11 = new Estacion("Deportivo 18 de marzo", 3, "Rivas Guillen 64", 3.2);
+            Estacion estacion12 = new Estacion("Potrero", 3, "Primavera 21", 3.3);
+            Estacion estacion13 = new Estacion("La raza", 3, "Puerto fe 32", 3.4);
+            Estacion estacion14 = new Estacion("Tlatelolco", 3, "Santiago 64", 3.5);
+
+            Estacion estacion15 = new Estacion("El rosario", 7, "Palestina 44", 7.1);
+            Estacion estacion16 = new Estacion("Aquiles Serdan", 7, "Palestina 44", 7.2);
+            Estacion estacion17 = new Estacion("Camarones", 7, "Rivas Guillen 64", 7.3);
+            Estacion estacion18 = new Estacion("Refineria", 7, "Primavera 21", 7.4);
+            Estacion estacion19 = new Estacion("Tacuba", 7, "Puerto fe 32", 7.5);
+
+
+            Cuatitlan.AddLast(estacion1);
+
+            Tultitlan.AddLast(estacion2);
+            Tultitlan.AddFirst(estacion);
+
+            Lecheria.AddLast(estacion3);
+            Lecheria.AddFirst(estacion1);
+
+            Tlalnepantla.AddLast(estacion4);
+            Tlalnepantla.AddFirst(estacion2);
+
+            Ferreria.AddLast(estacion3);
+
+            CuatroCaminos.AddFirst(estacion6);
+
+            Panteones.AddFirst(estacion5);
+            Panteones.AddLast(estacion7);
+
+            Tacuba.AddFirst(estacion6);
+            Tacuba.AddLast(estacion8);
+            Tacuba.AddLast(estacion18);
+
+            Cuitlahuac.AddFirst(estacion7);
+            Cuitlahuac.AddLast(estacion9);
+
+            Popotla.AddLast(estacion8);
+
+            IndiosVerdes.AddFirst(estacion11);
+
+            Deportivo.AddFirst(estacion10);
+            Deportivo.AddLast(estacion12);
+
+            Potrero.AddLast(estacion11);
+            Potrero.AddLast(estacion13);
+
+            LaRaza.AddFirst(estacion12);
+            LaRaza.AddLast(estacion14);
+
+            ElRosario.AddFirst(estacion16);
+
+            AquilesSerdan.AddFirst(estacion15);
+            AquilesSerdan.AddLast(estacion17);
+
+            Camarones.AddFirst(estacion16);
+            Camarones.AddLast(estacion18);
+
+            Refineria.AddFirst(estacion17);
+            Refineria.AddLast(estacion19);
+
+            Tacuba1.AddFirst(estacion18);
+            Tacuba1.AddLast(estacion6);
+            Tacuba1.AddLast(estacion8);
+
+            Estaciones[0] = Cuatitlan;
+            Estaciones[1] = Tultitlan;
+            Estaciones[2] = Lecheria;
+            Estaciones[3] = Tlalnepantla;
+            Estaciones[4] = Ferreria;
+            Estaciones[5] = CuatroCaminos;
+            Estaciones[6] = Panteones;
+            Estaciones[7] = Tacuba;
+            Estaciones[8] = Cuitlahuac;
+            Estaciones[9] = Popotla;
+            Estaciones[10] = IndiosVerdes;
+            Estaciones[11] = Deportivo;
+            Estaciones[12] = Potrero;
+            Estaciones[13] = LaRaza;
+            Estaciones[14] = Tlatelolco;
+            Estaciones[15] = ElRosario;
+            Estaciones[16] = AquilesSerdan;
+            Estaciones[17] = Camarones;
+            Estaciones[18] = Refineria;
+            Estaciones[19] = Tacuba1;
+
+            /**bool found = false;
+
+            int i = 0;
+            while (Estaciones[i] != null)
+            {
+                foreach (Estacion est in Estaciones[i])
+                {
+                    i++;
+                    if (lineaBuscar == est.GetLinea())
+                    {
+                        //Console.WriteLine($"Nombre: {est.GetNombre()}, Linea: {est.GetLinea()}, Direccion: {est.GetDireccion()}, Horario: {est.GetHorario()}");
+                        SerializeObjectToFile(est, "C:\\Users\\andri\\Desktop\\Estaciones.dat");
+                        Estacion loadedEstation = DeserializeObjectFromFile<Estacion>("C:\\Users\\andri\\Desktop\\Estaciones.dat");
+                        Console.WriteLine($"Loaded Station: Nombre:  {loadedEstation.Nombre}, Linea: {loadedEstation.Linea}, Direccion: {loadedEstation.Direccion}, Horario: {loadedEstation.Horario} ");
+                        found = true;
+                    }
+
+                }
+            }
+            if (found != true)
+                Console.WriteLine("Linea no encontrada");*/
+        }
+
+        private void QuicksortEstaciones(LinkedList<Estacion>[] estaciones, int inicio, int fin)
+        {
+            if (inicio < fin)
+            {
+                int indicePivote = Particionar(estaciones, inicio, fin);
+                if (indicePivote > inicio)
+                {
+                    QuicksortEstaciones(estaciones, inicio, indicePivote - 1);
+                }
+                if (indicePivote < fin)
+                {
+                    QuicksortEstaciones(estaciones, indicePivote + 1, fin);
+                }
+            }
+        }
+
+        private int Particionar(LinkedList<Estacion>[] estaciones, int inicio, int fin)
+        {
+            if (estaciones[fin] == null || estaciones[inicio] == null)
+            {
+                return inicio;
+            }
+
+            LinkedList<Estacion> pivote = new LinkedList<Estacion>(estaciones[fin]);
+            int i = inicio - 1;
+
+            for (int j = inicio; j < fin; j++)
+            {
+                if (estaciones[j] == null || estaciones[j].First == null || estaciones[j].First.Value == null)
+                {
+                    continue;
+                }
+
+                // Comparar nombres de estaciones para determinar el orden
+                if (string.Compare(estaciones[j].First.Value.Nombre, pivote.First.Value.Nombre) < 0)
+                {
+                    i++;
+                    if (estaciones[i] != null && estaciones[i].First != null && estaciones[i].First.Value != null)
+                    {
+                        (estaciones[i], estaciones[j]) = (estaciones[j], estaciones[i]);
+                    }
+                }
+            }
+
+            if (estaciones[i + 1] != null && estaciones[i + 1].First != null && estaciones[i + 1].First.Value != null)
+            {
+                (estaciones[i + 1], estaciones[fin]) = (estaciones[fin], estaciones[i + 1]);
+            }
+
+            return i + 1;
+        }
+
+        /**public static LinkedList<Estacion>[] InsertionSortByName(LinkedList<Estacion>[] arregloDeListas)
+        {
+            for (int i = 0; i < arregloDeListas.Length; i++)
+            {
+                var listaActual = arregloDeListas[i];
+                if (listaActual == null || listaActual.Count <= 1)
+                    continue;
+                if (listaActual.First == null)
+                    continue;
+                var current = listaActual.First.Next;
+                Stack<LinkedListNode<Estacion>> nodesToInsert = new Stack<LinkedListNode<Estacion>>();
+                while (current != null)
+                {
+                    var j = current.Previous;
+                    var key = current.Value;
+
+                    while (j != null && string.Compare(j.Value.GetNombre(), key.GetNombre()) > 0)
+                    {
+                        if (current == null)
+                            continue;
+                        nodesToInsert.Push(current);
+                        if (current.Next == null)
+                            break;
+                        current = j.Next;
+                    }
+
+                    if (current == null)
+                        continue;
+                    var next = current.Next;
+                    listaActual.Remove(current);
+                    current = next;
+                }
+
+                while (nodesToInsert.Count > 0)
+                {
+                    var node = nodesToInsert.Pop();
+                    if(node.Next == null)
+                        continue;
+                    listaActual.AddBefore(node.Next, node);
+                }
+            }
+
+            // Organizar el arreglo de listas según el nombre de la primera estación en cada lista
+            for (int i = 1; i < arregloDeListas.Length; i++)
+            {
+                if (arregloDeListas[i] == null)
+                    continue;
+
+                var currentLista = arregloDeListas[i];
+                var keyNode = currentLista.First;
+                var key = keyNode != null ? keyNode.Value : null;
+                int j = i - 1;
+
+                if (key == null)
+                    continue;
+
+                while (j >= 0 && (arregloDeListas[j].First == null || string.Compare(arregloDeListas[j].First.Value.GetNombre(), key.GetNombre()) > 0))
+                {
+                    arregloDeListas[j + 1] = arregloDeListas[j];
+                    j = j - 1;
+                }
+                arregloDeListas[j + 1] = currentLista;
+            }
+            return arregloDeListas;
+        } */
+
+        /** public static LinkedList<Estacion>[] BubbleSortByName(LinkedList<Estacion>[] arregloDeListas)
+        {
+            for (int i = 0; i < arregloDeListas.Length; i++)
+            {
+                var listaActual = arregloDeListas[i];
+                if (listaActual == null || listaActual.Count <= 1)
+                    continue;
+
+                bool swapped;
+                do
+                {
+                    swapped = false;
+                    var current = listaActual.First;
+                    while (current != null && current.Next != null)
+                    {
+                        var next = current.Next;
+                        if (string.Compare(current.Value.GetNombre(), next.Value.GetNombre()) > 0)
+                        {
+                            listaActual.Remove(next);
+                            listaActual.AddBefore(current, next);
+                            swapped = true;
+                        }
+                        else
+                        {
+                            current = current.Next;
+                        }
+                    }
+                } while (swapped);
+            }
+
+            for (int i = 0; i < arregloDeListas.Length; i++)
+            {
+                var currentLista = arregloDeListas[i];
+                if (currentLista == null || currentLista.Count <= 1)
+                    continue;
+
+                var keyNode = currentLista.First;
+                var key = keyNode != null ? keyNode.Value : null;
+                int j = i - 1;
+
+                if (key == null)
+                    continue;
+
+                while (j >= 0 && (arregloDeListas[j].First == null || string.Compare(arregloDeListas[j].First.Value.GetNombre(), key.GetNombre()) > 0))
+                {
+                    arregloDeListas[j + 1] = arregloDeListas[j];
+                    j = j - 1;
+                }
+                arregloDeListas[j + 1] = currentLista;
+            }
+
+            return arregloDeListas;
+        } */
+
+        /**public static void SelectionSort(ref LinkedList<Estacion>[] arregloDeListas)
+        {
+            for (int i = 0; i < arregloDeListas.Length; i++)
+            {
+                var listaActual = arregloDeListas[i];
+                if (listaActual == null || listaActual.Count <= 1)
+                    continue;
+
+                int minIndex = i;
+                LinkedList<Estacion> minLista = listaActual;
+
+                for (int j = i + 1; j < arregloDeListas.Length; j++)
+                {
+                    var currentLista = arregloDeListas[j];
+
+                    if (currentLista == null || currentLista.Count <= 0)
+                        continue;
+
+                    if (string.Compare(currentLista.First.Value.GetNombre(), minLista.First.Value.GetNombre()) < 0)
+                    {
+                        minIndex = j;
+                        minLista = currentLista;
+                    }
+                }
+
+                if (minIndex != i)
+                {
+                    arregloDeListas[i] = minLista;
+                    arregloDeListas[minIndex] = listaActual;
+                }
+            }
+        } */
+
+        static void SerializeObjectToFile<T>(T obj, string filepath)
+        {
+            using (FileStream fs = new FileStream(filepath, FileMode.Create))
+            {
+#pragma warning disable SYSLIB0011
+                BinaryFormatter formatter = new BinaryFormatter();
+#pragma warning restore SYSLIB0011
+                formatter.Serialize(fs, obj);
+            }
+        }
+
+        static T DeserializeObjectFromFile<T>(string filepath)
+        {
+            T obj;
+            using (FileStream fs = new FileStream(filepath, FileMode.Open))
+            {
+#pragma warning disable SYSLIB0011
+                BinaryFormatter formatter = new BinaryFormatter();
+#pragma warning restore SYSLIB0011
+                obj = (T)formatter.Deserialize(fs);
+            }
+            return obj;
+        }
+
+        //boton agregar
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string nombre = TBNombre.Text;
+            int linea = int.Parse(TBLinea.Text);
+            string direccion = TBDireccion.Text;
+            double horario = double.Parse(TBHorario.Text);
+
+            Estacion nuevaEstacion = new Estacion(nombre, linea, direccion, horario);
+
+
+            int i = 0;
+            while (true)
+            {
+                if (Estaciones[i] == null)
+                {
+                    Estaciones[i] = new LinkedList<Estacion>();
+                    Estaciones[i].AddLast(nuevaEstacion);
+
+                    string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Estaciones.dat");
+                    SerializeObjectToFile(Estaciones, filePath);
+
+                    string message = $"Nueva estacion agregada: \nNombre: {nuevaEstacion.GetNombre()} \nLinea: {nuevaEstacion.GetLinea()} \nDireccion: {nuevaEstacion.GetDireccion()} \nHorario: {nuevaEstacion.GetHorario()}";
+                    ShowMessageDialog("Informacion de la estacion", message);
+
+                    break;
+                }
+                else
+                {
+                    foreach (Estacion est in Estaciones[i])
+                    {
+                        SerializeObjectToFile(est, "C:\\Users\\andri\\Desktop\\Estaciones.dat");
+                        continue;
+                    }
+                }
+                i++;
+            }
+
+            TBNombre.Text = "";
+            TBLinea.Text = "";
+            TBDireccion.Text = "";
+            TBHorario.Text = "";
+        }
+
+        private void ShowMessageDialog(string title, string message)
+        {
+            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void TBLinea_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void TBNombre_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void TBDireccion_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            string nombreEliminar = TBNombre.Text;
+            bool found = false;
+
+
+
+            for (int i = 0; i < Estaciones.Length && !found; i++)
+            {
+                if (Estaciones[i] != null)
+                {
+                    List<Estacion> estacionesLista = Estaciones[i].ToList();
+
+                    foreach (Estacion est in estacionesLista)
+                    {
+                        if (nombreEliminar.Equals(est.GetNombre(), StringComparison.OrdinalIgnoreCase))
+                        {
+                            Estaciones[i].Remove(est);
+                            found = true;
+
+                            string message = $"Estacion eliminada: \nNombre: {est.GetNombre()} \nLinea: {est.GetLinea()} \nDireccion: {est.GetDireccion()} \nHorario: {est.GetHorario()}";
+                            ShowMessageDialog("Informacion de la estacion eliminada", message);
+
+                            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Estaciones.dat");
+                            SerializeObjectToFile(Estaciones, filePath);
+
+                            break; // Salir del bucle foreach si encontramos y eliminamos la estación
+                        }
+                    }
+                }
+            }
+
+            if (!found)
+            {
+                ShowMessageDialog("Error", "La estacion no existe");
+            }
+
+            TBNombre.Text = "";
+            TBLinea.Text = "";
+            TBDireccion.Text = "";
+            TBHorario.Text = "";
+        }
+
+
+        //boton mostrar
+        private List<string> estacionesRepetidas = new List<string>();
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Estaciones.dat");
+            Estaciones = DeserializeObjectFromFile<LinkedList<Estacion>[]>(filePath);
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            QuicksortEstaciones(Estaciones, 0, 19);
+            stopwatch.Stop();
+
+            MessageBox.Show($"Tiempo de ejecución: {stopwatch.ElapsedMilliseconds} ms");
+
+            estacionesRepetidas.Clear();
+
+            StringBuilder listaEstaciones = new StringBuilder();
+            for (int i = 0; i < Estaciones.Length; i++)
+            {
+                if (Estaciones[i] != null)
+                {
+                    foreach (Estacion est in Estaciones[i])
+                    {
+                        if (!estacionesRepetidas.Contains(est.GetNombre()))
+                        {
+                            estacionesRepetidas.Add(est.GetNombre());
+                            listaEstaciones.AppendLine($"Nombre: {est.GetNombre()}, Linea: {est.GetLinea()}, Direccion: {est.GetDireccion()}, Horario: {est.GetHorario()}");
+                        }
+                    }
+                }
+            }
+
+            if (listaEstaciones.Length > 0)
+            {
+                ShowMessageDialog("Lista de Estaciones", listaEstaciones.ToString());
+            }
+            else
+            {
+                ShowMessageDialog("Lista de Estaciones", "No hay estaciones registradas.");
+            }
+
+            TBNombre.Text = "";
+            TBLinea.Text = "";
+            TBDireccion.Text = "";
+            TBHorario.Text = "";
+        }
+
+        public List<Estacion> EncontrarCaminoMasCorto(Estacion inicio, Estacion fin)
+        {
+            var distancias = new Dictionary<Estacion, double>();
+            var previos = new Dictionary<Estacion, Estacion>();
+            var estaciones = new List<Estacion>();
+
+            foreach (var estacion in Estaciones.Values)
+            {
+                distancias[estacion] = double.MaxValue;
+                previos[estacion] = null;
+                estaciones.Add(estacion);
+            }
+            distancias[inicio] = 0;
+
+            while (estaciones.Count != 0)
+            {
+                estaciones.Sort((x, y) => distancias[x].CompareTo(distancias[y]));
+                var actual = estaciones[0];
+                estaciones.Remove(actual);
+
+                if (actual.Equals(fin))
+                {
+                    var camino = new List<Estacion>();
+                    while (previos[actual] != null)
+                    {
+                        camino.Add(actual);
+                        actual = previos[actual];
+                    }
+                    camino.Add(inicio);
+                    camino.Reverse();
+                    return camino;
+                }
+
+                foreach (var vecino in ObtenerVecinos(actual))
+                {
+                    double alt = distancias[actual] + ObtenerDistancia(actual, vecino);
+                    if (alt < distancias[vecino])
+                    {
+                        distancias[vecino] = alt;
+                        previos[vecino] = actual;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private List<Estacion> ObtenerVecinos(Estacion estacion)
+        {
+            if (estacion != null && Estaciones.ContainsKey(estacion.Nombre))
+            {
+                return Estaciones[estacion.Nombre].Vecinos;
+            }
+            return new List<Estacion>();
+        }
+
+        private double ObtenerDistancia(Estacion a, Estacion b)
+        {
+            if (a.Vecinos.Contains(b))
+            {
+                return 1.0; // Si están conectadas directamente, la distancia es 1
+            }
+            return double.MaxValue; // Si no están conectadas, devolver un valor muy grande
+        }
+    }
+}
+
+// INTERFAZ
+
+
+<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Button Content="Agregar" HorizontalAlignment="Left" Margin="178,349,0,0" VerticalAlignment="Top" FontSize="30" Click="Button_Click" Background="#FF84D770"/>
+        <TextBlock x:Name="TextBlockNombre" HorizontalAlignment="Left" Margin="103,107,0,0" TextWrapping="Wrap" Text="Nombre" VerticalAlignment="Top" FontSize="30"/>
+        <TextBlock HorizontalAlignment="Left" Margin="103,205,0,0" TextWrapping="Wrap" Text="Linea" VerticalAlignment="Top" FontSize="30"/>
+        <TextBlock x:Name="Direccion" HorizontalAlignment="Left" Margin="462,107,0,0" TextWrapping="Wrap" Text="Direccion" VerticalAlignment="Top" FontSize="30"/>
+        <TextBox x:Name="TBNombre" HorizontalAlignment="Left" Margin="103,152,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="257" FontSize="30" TextChanged="TBNombre_TextChanged"/>
+        <TextBlock HorizontalAlignment="Left" Margin="462,205,0,0" TextWrapping="Wrap" Text="Horario" VerticalAlignment="Top" FontSize="30"/>
+        <TextBox x:Name="TBLinea" HorizontalAlignment="Left" Margin="103,267,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" FontSize="30" TextChanged="TBLinea_TextChanged"/>
+        <TextBox x:Name="TBDireccion" HorizontalAlignment="Left" Margin="462,152,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="267" FontSize="30" TextChanged="TBDireccion_TextChanged"/>
+        <TextBox x:Name="TBHorario" HorizontalAlignment="Left" Margin="462,267,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" TextChanged="TextBox_TextChanged" FontSize="30"/>
+        <Label x:Name="Titulo" Content="Metro CDMX" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" FontSize="40"/>
+        <Button Content="Eliminar" HorizontalAlignment="Left" Margin="321,349,0,0" VerticalAlignment="Top" FontSize="30" Width="115" Background="#FFE31E57" Click="Button_Click_1"/>
+        <Button Content="Mostrar Todo" HorizontalAlignment="Left" Margin="462,349,0,0" VerticalAlignment="Top" FontSize="30" Click="Button_Click_2"/>
+
+
+    </Grid>
+</Window>
+
